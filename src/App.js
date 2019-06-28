@@ -1,26 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import Users from "./components/users/Users";
+import User from "./components/users/User";
+import Search from "./components/users/Search";
+import Alert from "./components/layout/Alert";
+import About from "./components/pages/About";
+import axios from "axios";
 
-function App() {
+import GithubState from "./context/github/GithubState";
+
+import "./App.css";
+
+const App = () => {
+  const [alert, setAlert] = useState(null);
+
+  // Set alert
+  const showAlert = (msg, type) => {
+    setAlert({ msg, type });
+    setTimeout(() => setAlert(null), 5000);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <GithubState>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <div className="container">
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <Fragment>
+                    <Alert alert={alert} />
+                    <Search setAlert={showAlert} />
+                    <Users />
+                  </Fragment>
+                )}
+              />
+              <Route exact path="/about" component={About} />
+              <Route exact path="/user/:login" component={<User />} />
+            </Switch>
+          </div>
+        </div>
+      </Router>
+    </GithubState>
   );
-}
+};
 
 export default App;
